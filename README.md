@@ -1,8 +1,6 @@
 
-Final project &ndash; A personal blogging system &ndash; Starter project
+Final project - Individual Java Swing Application
 ==========
-This repository contains a starting point for your team's final project.
-Your team should update this README to include the information required, as presented in the project handout available on Canvas. <br>
 
 <strong style="font-size:20px">Team Name: <br></strong> Easy Byte Recipes <br>
 
@@ -42,4 +40,3 @@ Username: test <br>
 Password: test
 
 ---
-<strong style="font-size:20px">Olga, Yiwei, Abram, Colton</strong>
