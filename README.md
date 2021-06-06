@@ -1,5 +1,5 @@
 
-Final project - Individual Java Swing Application
+Final project - Individual Java Swing UI Application
 ==========
 
 <strong style="font-size:20px">Team Name: <br></strong> Easy Byte Recipes <br>
@@ -15,7 +15,7 @@ On the home page, logged in users can access the comments page where they can co
 Users that wish to update or edit their profile, they can simply click on the 'Edit Profile'. Submitting the new information will UPDATE the database with the user's new information. <br>
 
 <strong style="font-size:20px">Are there any special setup instructions:</strong> <br>
-- added uuid package to auth-routes.js to enable authentication of user when loggin in and registering (npm install uuid)
+- added uuid package to auth-routes.js to enable authentication of user when logging in and registering (npm install uuid)
 - added a custom handlebar to convert HTML back to text when we display the recipe information via handlebars : <br>
 const Handlebars = require("handlebars"); <br>
     Handlebars.registerHelper('encodeMyString',function(inputData){ <br>
