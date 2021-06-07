@@ -1,5 +1,5 @@
 
-Final project - Individual Java Swing UI Application
+Individual Java Swing UI Application
 ==========
 
 <strong style="font-size:20px">Team Name: <br></strong> Easy Byte Recipes <br>
