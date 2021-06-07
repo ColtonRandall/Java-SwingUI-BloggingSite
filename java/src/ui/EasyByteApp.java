@@ -1,211 +1,157 @@
 package ui;
 
 import javax.swing.*;
-
-public class EasyByteApp extends javax.swing.JFrame {
-
-        private JButton login;
-        private JButton logout;
-        private JTextArea username;
-        private JTextArea password;
-        private JButton deleteUser;
-        private JLabel border;
-        private JLabel lblCookie;
-        private JLabel lblName;
-        private JLabel lblTypes;
-        private JComboBox<String> cboType;
-
-        private final ImageIcon defaultAvatar = new ImageIcon(
-                getClass().getResource("/ui/defaultAvatar.png"));
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 
+public class EasyByteApp extends JPanel implements ActionListener {
 
-        public EasyByteApp() {
+    // Swing components
+    private static JLabel successLogin;
+    private static JLabel passwordLabel;
+    private static JLabel usernameLabel;
+    private static JButton login;
+    private static JButton logout;
+    private static JButton deleteAccount;
 
-            initComponents();
+    private static JPasswordField passwordText;
+    private static JTextField usernameText;
+    private static JTable userData;
 
-//            btnChange.addActionListener(this::handleBtnChangeClick);
+    // Colours
+    private static final Color backgroundColour = new Color(87, 163, 163);
+    private static final Color buttonColour = new Color(236, 198, 164);
 
-            setLocationRelativeTo(null);
-            setVisible(true);
-        }
 
-        @SuppressWarnings("unchecked")
-        private void initComponents() {
 
-            username = new JTextArea();
-            password = new JTextArea();
+    // Constructor
+    public EasyByteApp() {
 
-            login = new JButton();
-            logout = new JButton();
+        // JPanel
+        JPanel panel = new JPanel();
 
-            border = new javax.swing.JLabel();
-            JLabel jLabel1 = new javax.swing.JLabel();
-            JLabel jLabel2 = new javax.swing.JLabel();
-            JLabel jLabel3 = new javax.swing.JLabel();
-            lblName = new javax.swing.JLabel();
-            lblTypes = new javax.swing.JLabel();
-            JScrollPane jScrollPane1 = new javax.swing.JScrollPane();
-            lblCookie = new javax.swing.JLabel();
-            cboType = new javax.swing.JComboBox<>();
-            JLabel jLabel4 = new javax.swing.JLabel();
+        // JFrame
+        JFrame frame = new JFrame();
+        frame.setSize(300, 200);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setTitle("Easy Byte Recipe Login");
+        frame.add(panel);
 
-            setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        // Background / layout features
+        panel.setLayout(null);
+        panel.setBackground(backgroundColour);
 
-            border.setIcon(this.defaultAvatar);
-            border.setBorder(javax.swing.BorderFactory.createLineBorder(null, 1));
 
-            jLabel1.setText("Username:");
+        // ----- Username -----
+        usernameLabel = new JLabel("Username");
+        // x, y, width, height
+        usernameLabel.setBounds(10, 20, 80, 25);
+        panel.add(usernameLabel);
+        usernameText = new JTextField(20);
+        usernameText.setBounds(100, 20, 165, 25);
+        panel.add(usernameText);
 
-            jLabel2.setText("Password:");
+        // ------ Password ------
+        passwordLabel = new JLabel("Password");
+        passwordLabel.setBounds(10, 50, 80, 25);
+        panel.add(passwordLabel);
+        passwordText = new JPasswordField(20);
+        passwordText.setBounds(100, 50, 165, 25);
+        panel.add(passwordText);
 
-            jLabel3.setText("User data:");
+        // ------ Login button -----
+        login = new JButton("Login");
+        login.setBounds(10, 80, 80, 25);
+        login.setBackground(buttonColour);
+        // Add action to login button
+        login.addActionListener(this);
+        panel.add(login);
 
-            lblName.setText("Username goes here");
 
-            lblTypes.setText("Password go here");
+        // ------ Logout button -----
+        logout = new JButton("Logout");
+        logout.setBounds(100, 80, 80, 25);
+        logout.setBackground(buttonColour);
+        panel.add(logout);
 
-            username.setEditable(false);
-            username.setColumns(20);
-            username.setLineWrap(true);
-            username.setRows(5);
-            jScrollPane1.setViewportView(username);
 
-            login.setText("View");
+        // ---- JTable user data ----
 
-            lblCookie.setText("You've seen 0 Users so far!");
+        // TODO ------ remove dummy data once finished
+        String[] columnNames = {"First name", "Last name", "UserID"};
+        Object[][] data = {
+                {"Colton", "Randall", "01"},
+                {"Bob", "Martin", "02"},
+                {"Sarah", "Greenwood", "03"},
+                {"Jess", "McDonald", "04"},
+        };
 
-//            cboType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"Any", "bug", "dark", "dragon",
-//                    "electric", "fairy", "fighting", "fire", "flying", "ghost", "grass", "ground", "ice", "normal", "poison", "psychic", "rock", "steel", "water"}));
+        // TODO ----- end of dummy data
 
-            jLabel4.setText("Filter type:");
+        userData = new JTable(data, columnNames);
+        userData.setFillsViewportHeight(true);
 
-            javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-            getContentPane().setLayout(layout);
-            layout.setHorizontalGroup(
-                    layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                    .addContainerGap()
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(layout.createSequentialGroup()
-                                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                            .addComponent(border, GroupLayout.PREFERRED_SIZE,
-                                                                    GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
-                                                            .addComponent(cboType, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                            .addComponent(login, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE)
-                                                            .addGroup(layout.createSequentialGroup()
-                                                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                                            .addGroup(layout.createSequentialGroup()
-                                                                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                                                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                                                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                                                            .addComponent(lblName)
-                                                                                            .addComponent(lblTypes)))
-                                                                            .addComponent(jLabel3))
-                                                                    .addGap(0, 0, Short.MAX_VALUE))))
-                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                                    .addGap(0, 0, Short.MAX_VALUE)
-                                                    .addComponent(lblCookie)))
-                                    .addContainerGap())
-            );
-            layout.setVerticalGroup(
-                    layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                    .addContainerGap()
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(layout.createSequentialGroup()
-                                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                            .addComponent(jLabel1)
-                                                            .addComponent(lblName))
-                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                            .addComponent(jLabel2)
-                                                            .addComponent(lblTypes))
-                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                    .addComponent(jLabel3)
-                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                    .addComponent(jScrollPane1))
-                                            .addGroup(layout.createSequentialGroup()
-                                                    .addComponent(border)
-                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                    .addComponent(jLabel4)
-                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                    .addComponent(cboType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                    .addComponent(login)
-                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)))
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(lblCookie)
-                                    .addContainerGap())
-            );
+        // Add a scroll pane
+        JScrollPane scrollPane = new JScrollPane(userData);
+        scrollPane.setBounds(80, 150, 500, 100);
+        panel.add(scrollPane);
 
-            pack();
-        }
-//
-//        private void handleBtnChangeClick(ActionEvent e) {
-//            new RetrieveUserSwingWorker().execute();
-//        }
 
-//        private void setNumPokemonSeen(int num) {
-//            lblCookie.setText("You've seen " + num + " Pokémon so far!");
-//        }
 
-//        private void setPokemon(Pokemon pkm) {
-//            lblName.setText(pkm.getName());
-//            lblTypes.setText(pkm.getTypes());
-//            txtAbout.setText(pkm.getDexEntry());
-//
-//            String url = "http://localhost:3000/images/" + pkm.getSprite();
-//            try {
-//                imgSprite.setIcon(new ImageIcon(new URL(url)));
-//            } catch (MalformedURLException e) {
-//                e.printStackTrace();
-//            }
-//        }
+        // ------ Delete Account button -----
+        deleteAccount = new JButton("Delete Account");
+        deleteAccount.setBounds(200, 300, 150, 25);
+        deleteAccount.setBackground(Color.RED);
+        panel.add(deleteAccount);
 
-//        private class RetrieveUserSwingWorker extends SwingWorker<Pokemon, Void> {
-//
-//            private final String type;
-//
-//            public RetrieveUserSwingWorker() {
-//                btnChange.setEnabled(false);
-//                cboType.setEnabled(false);
-//                imgSprite.setIcon(defaultImage);
-//
-//                this.type = cboType.getSelectedItem().toString();
-//            }
-////
-//            @Override
-//            protected User doInBackground() throws Exception {
-//                if (type.equals("Any")) {
-//                    return API.getInstance().getRandomPokemon();
-//                } else {
-//                    return API.getInstance().getRandomPokemonOfType(new TypeQuery(type));
-//                }
-//            }
-//
-//            @Override
-//            protected void done() {
-//                try {
-//                    Pokemon pkm = get();
-//                    int callCount = API.getInstance().getCallCount();
-//                    setPokemon(pkm);
-//                    setNumPokemonSeen(callCount);
-//
-//                } catch (InterruptedException | ExecutionException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                btnChange.setEnabled(true);
-//                cboType.setEnabled(true);
-//            }
-//        }
+
+
+
+
+
+
+		/* Add success message to login button - Only show if user enters a correct
+		 * username and password
+		 */
+        successLogin = new JLabel("");
+        successLogin.setBounds(10, 110, 300, 25);
+        panel.add(successLogin);
+
+        frame.setVisible(true);
+
     }
+
+
+    // Runs whenever login button is run
+    // TODO Implement this method.
+    /*  Hint #1: event.getSource() will return the button which was pressed.
+        Hint #2: JTextField's getText() method will get the value in the text box, as a String.
+        Hint #3: JTextField's setText() method will allow you to pass it a String, which will be displayed in
+        the text box.
+     */
+
+    @Override
+    public void actionPerformed(ActionEvent arg0) {
+
+        String username = usernameText.getText();
+        String password = passwordText.getText();
+
+        /*
+         *  Conditional for if username and password
+         *  match - then print success message
+         */
+        if (username.equals("username") && password.equals("pa55word")) {
+            successLogin.setText("Login successful!");
+        } else {
+            successLogin.setText("Login failed!");
+        }
+
+    }
+
+}
+
+
 
 
