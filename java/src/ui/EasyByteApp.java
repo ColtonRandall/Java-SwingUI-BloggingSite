@@ -37,7 +37,7 @@ public class EasyByteApp extends JPanel implements ActionListener {
 
         // JFrame
         JFrame frame = new JFrame();
-        frame.setSize(300, 200);
+        frame.setSize(500, 500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Easy Byte Recipe Login");
         frame.add(panel);
@@ -57,25 +57,25 @@ public class EasyByteApp extends JPanel implements ActionListener {
 
 
         // ----- Username -----
-        usernameLabel = new JLabel("Username");
+        usernameLabel = new JLabel("Username:");
         // x, y, width, height
-        usernameLabel.setBounds(10, 20, 80, 25);
+        usernameLabel.setBounds(130, 50, 80, 25);
         panel.add(usernameLabel);
         usernameText = new JTextField(20);
-        usernameText.setBounds(100, 20, 165, 25);
+        usernameText.setBounds(200, 50, 165, 25);
         panel.add(usernameText);
 
         // ------ Password ------
-        passwordLabel = new JLabel("Password");
-        passwordLabel.setBounds(10, 50, 80, 25);
+        passwordLabel = new JLabel("Password:");
+        passwordLabel.setBounds(130, 80, 80, 25);
         panel.add(passwordLabel);
         passwordText = new JPasswordField(20);
-        passwordText.setBounds(100, 50, 165, 25);
+        passwordText.setBounds(200, 80, 165, 25);
         panel.add(passwordText);
 
         // ------ Login button -----
         login = new JButton("Login");
-        login.setBounds(10, 80, 80, 25);
+        login.setBounds(150, 130, 80, 25);
         login.setBackground(buttonColour);
         // Add action to login button
         login.addActionListener(this);
@@ -84,7 +84,7 @@ public class EasyByteApp extends JPanel implements ActionListener {
 
         // ------ Logout button -----
         logout = new JButton("Logout");
-        logout.setBounds(100, 80, 80, 25);
+        logout.setBounds(250, 130, 80, 25);
         logout.setBackground(buttonColour);
         panel.add(logout);
 
@@ -107,14 +107,14 @@ public class EasyByteApp extends JPanel implements ActionListener {
 
         // Add a scroll pane
         JScrollPane scrollPane = new JScrollPane(userData);
-        scrollPane.setBounds(80, 150, 500, 100);
+        scrollPane.setBounds(80, 200, 350, 80);
         panel.add(scrollPane);
 
 
 
         // ------ Delete Account button -----
         deleteAccount = new JButton("Delete Account");
-        deleteAccount.setBounds(200, 300, 150, 25);
+        deleteAccount.setBounds(180, 350, 150, 25);
         deleteAccount.setBackground(Color.RED);
         panel.add(deleteAccount);
 
@@ -128,7 +128,7 @@ public class EasyByteApp extends JPanel implements ActionListener {
 		 * username and password
 		 */
         successLogin = new JLabel("");
-        successLogin.setBounds(10, 110, 300, 25);
+        successLogin.setBounds(210, 160, 300, 25);
         panel.add(successLogin);
 
 
@@ -159,8 +159,10 @@ public class EasyByteApp extends JPanel implements ActionListener {
          */
         if (username.equals("username") && password.equals("pa55word")) {
             successLogin.setText("Login successful!");
+            successLogin.setForeground(Color.BLUE);
         } else {
             successLogin.setText("Login failed!");
+            successLogin.setForeground(Color.RED);
         }
 
     }
