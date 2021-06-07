@@ -37,4 +37,47 @@ public class API {
                 .build();
     }
 
+//    public Pokemon getRandomPokemon() throws IOException, InterruptedException {
+//        HttpRequest.Builder builder = HttpRequest.newBuilder()
+//                .uri(URI.create(BASE_URL + "/random"))
+//                .setHeader("Accept", "application/json")
+//                .method("GET", HttpRequest.BodyPublishers.noBody());
+//
+//        HttpRequest request = builder.build();
+//
+//        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+//        String json = response.body();
+//
+//
+//        return JSONUtils.toObject(json, Pokemon.class);
+//    }
+
+//    public Pokemon getRandomPokemonOfType(TypeQuery typeQuery) throws IOException, InterruptedException {
+//
+//        String json = JSONUtils.toJSON(typeQuery);
+//
+//        HttpRequest.Builder builder = HttpRequest.newBuilder()
+//                .uri(URI.create(BASE_URL + "/random"))
+//                .setHeader("Content-Type", "application/json")
+//                .setHeader("Accept", "application/json")
+//                .method("POST", HttpRequest.BodyPublishers.ofString(json));
+//
+//        HttpRequest request = builder.build();
+//
+//        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+//        String responseJson = response.body();
+//
+//
+//        return JSONUtils.toObject(responseJson, Pokemon.class);
+//    }
+
+//    public int getCallCount() {
+//        List<HttpCookie> cookies = this.cookieManager.getCookieStore().get(URI.create(BASE_URL));
+//        for (HttpCookie cookie : cookies) {
+//            if (cookie.getName().equals("callCount")) {
+//                return Integer.parseInt(cookie.getValue());
+//            }
+//        }
+//        return 0;
+//    }
 }

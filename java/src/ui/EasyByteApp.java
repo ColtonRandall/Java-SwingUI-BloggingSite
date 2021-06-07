@@ -161,8 +161,7 @@ public class EasyByteApp extends JPanel implements ActionListener {
             successLogin.setText("Login successful!");
             successLogin.setForeground(Color.BLUE);
         } else {
-            successLogin.setText("Login failed!");
-            successLogin.setForeground(Color.RED);
+            JOptionPane.showMessageDialog(login, "Login Failed");
         }
 
     }
