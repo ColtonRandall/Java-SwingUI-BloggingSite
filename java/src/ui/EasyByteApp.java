@@ -15,10 +15,13 @@ public class EasyByteApp extends JPanel implements ActionListener {
     private static JButton login;
     private static JButton logout;
     private static JButton deleteAccount;
-
     private static JPasswordField passwordText;
     private static JTextField usernameText;
     private static JTable userData;
+
+    // Images
+    private final ImageIcon logo;
+    private static JLabel imageLabel;
 
     // Colours
     private static final Color backgroundColour = new Color(87, 163, 163);
@@ -42,6 +45,15 @@ public class EasyByteApp extends JPanel implements ActionListener {
         // Background / layout features
         panel.setLayout(null);
         panel.setBackground(backgroundColour);
+
+
+        // TODO  -------- Logo ----------
+        this.logo = new ImageIcon(getClass().getResource("logo.png"));
+
+        imageLabel = new JLabel(logo);
+        imageLabel.setIcon(this.logo);
+        add(imageLabel);
+
 
 
         // ----- Username -----
@@ -119,6 +131,9 @@ public class EasyByteApp extends JPanel implements ActionListener {
         successLogin.setBounds(10, 110, 300, 25);
         panel.add(successLogin);
 
+
+        // TODO Leave at end of constructor
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
     }
@@ -149,6 +164,14 @@ public class EasyByteApp extends JPanel implements ActionListener {
         }
 
     }
+
+    // Draw images
+//    public void paint(Graphics g){
+//
+//        g.drawImage(logo.getImage(), 100, 5, null);
+//    }
+
+
 
 }
 
