@@ -1,5 +1,9 @@
 package ui;
 
+import pojos.User;
+import pojos.UserLogin;
+import web.API;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -48,7 +52,7 @@ public class EasyByteApp extends JPanel implements ActionListener {
 
 
         // TODO  -------- Logo ----------
-        this.logo = new ImageIcon(getClass().getResource("logo.png"));
+        this.logo = new ImageIcon(getClass().getResource("/ui/logo.png"));
 
         imageLabel = new JLabel(logo);
         imageLabel.setIcon(this.logo);
@@ -166,6 +170,40 @@ public class EasyByteApp extends JPanel implements ActionListener {
 
     }
 
+
+
+    // TODO SWINGWORKER HERE
+    private class getUserSwingWorker extends SwingWorker<User, Void> {
+
+        private final String user;
+
+        public getUserSwingWorker(String user) {
+            this.user = user;
+            login.setEnabled(false);
+            logout.setEnabled(false);
+
+        }
+
+
+        // TODO DoInBackGround HERE
+        @Override
+        protected User doInBackground() throws Exception {
+
+            return API.getInstance().getUserLogin(new UserLogin("Coltonrandall", "pa55word"));
+        }
+
+
+
+        // TODO Done() HERE
+        @Override
+        protected void done() {
+
+
+        }
+    }
+}
+
+
     // Draw images
 //    public void paint(Graphics g){
 //
@@ -173,8 +211,6 @@ public class EasyByteApp extends JPanel implements ActionListener {
 //    }
 
 
-
-}
 
 
 

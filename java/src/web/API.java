@@ -1,21 +1,24 @@
 package web;
 
+import pojos.User;
+import pojos.UserLogin;
+import util.JSONUtils;
+
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.CookieManager;
-import java.net.HttpCookie;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.List;
 
 public class API {
     private static API instance;
 
-    private static final String BASE_URL = "http://localhost:3000/api";
+    private static final String BASE_URL = "http://localhost:3000";
 
+
+    // TODO SINGLETON PATTERN
     public static API getInstance() {
         if (instance == null) {
             instance = new API();
@@ -37,39 +40,31 @@ public class API {
                 .build();
     }
 
-//    public Pokemon getRandomPokemon() throws IOException, InterruptedException {
-//        HttpRequest.Builder builder = HttpRequest.newBuilder()
-//                .uri(URI.create(BASE_URL + "/random"))
-//                .setHeader("Accept", "application/json")
-//                .method("GET", HttpRequest.BodyPublishers.noBody());
-//
-//        HttpRequest request = builder.build();
-//
-//        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-//        String json = response.body();
-//
-//
-//        return JSONUtils.toObject(json, Pokemon.class);
-//    }
 
-//    public Pokemon getRandomPokemonOfType(TypeQuery typeQuery) throws IOException, InterruptedException {
-//
-//        String json = JSONUtils.toJSON(typeQuery);
-//
-//        HttpRequest.Builder builder = HttpRequest.newBuilder()
-//                .uri(URI.create(BASE_URL + "/random"))
-//                .setHeader("Content-Type", "application/json")
-//                .setHeader("Accept", "application/json")
-//                .method("POST", HttpRequest.BodyPublishers.ofString(json));
-//
-//        HttpRequest request = builder.build();
-//
-//        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-//        String responseJson = response.body();
-//
-//
-//        return JSONUtils.toObject(responseJson, Pokemon.class);
-//    }
+    public User getUserLogin(UserLogin userLogin) throws InterruptedException, IOException {
+
+        String json = JSONUtils.toJSON(userLogin);
+
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/login"))
+                .setHeader("Content-Type", "application/json")
+                .setHeader("Accept", "application/json")
+                .method("POST", HttpRequest.BodyPublishers.ofString(json));
+
+        // Request
+        HttpRequest request = builder.build();
+
+        // Response
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        String responseJson = response.body();
+
+        User user = JSONUtils.toObject(responseJson, User.class);
+
+        return user;
+
+    }
+
+
 
 //    public int getCallCount() {
 //        List<HttpCookie> cookies = this.cookieManager.getCookieStore().get(URI.create(BASE_URL));
