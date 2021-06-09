@@ -2,17 +2,27 @@ package pojos;
 
 public class User {
 
-    private int userId;
+    private String userId;
     private String username;
     private String firstName;
     private String lastName;
 
+    public String getPassword() {
+        return password;
+    }
 
-    public int getUserId() {
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    private String password;
+
+
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

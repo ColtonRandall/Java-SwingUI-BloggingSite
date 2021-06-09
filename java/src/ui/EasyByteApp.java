@@ -3,14 +3,22 @@ package ui;
 import pojos.User;
 import pojos.UserLogin;
 import web.API;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.concurrent.ExecutionException;
 
 
 public class EasyByteApp extends JPanel implements ActionListener {
+
+    // ----- Variables ----
+
+    // JPanel
+    private static JPanel panel = new JPanel();
 
     // Swing components
     private static JLabel successLogin;
@@ -21,23 +29,28 @@ public class EasyByteApp extends JPanel implements ActionListener {
     private static JButton deleteAccount;
     private static JPasswordField passwordText;
     private static JTextField usernameText;
+
+    // Table components
     private static JTable userData;
+    private static String[] columnNames;
+    private static String[][] data;
+
 
     // Images
-    private final ImageIcon logo;
+    private ImageIcon logo;
     private static JLabel imageLabel;
+    private ImageIcon defaultAvatar;
 
     // Colours
     private static final Color backgroundColour = new Color(87, 163, 163);
     private static final Color buttonColour = new Color(236, 198, 164);
 
+    // User object
+    private User user;
 
 
-    // Constructor
+    // ----- Constructor ----
     public EasyByteApp() {
-
-        // JPanel
-        JPanel panel = new JPanel();
 
         // JFrame
         JFrame frame = new JFrame();
@@ -51,12 +64,20 @@ public class EasyByteApp extends JPanel implements ActionListener {
         panel.setBackground(backgroundColour);
 
 
-        // TODO  -------- Logo ----------
+        // -------- Logo ----------
         this.logo = new ImageIcon(getClass().getResource("/ui/logo.png"));
 
         imageLabel = new JLabel(logo);
         imageLabel.setIcon(this.logo);
         add(imageLabel);
+
+
+
+        // ----- Default avatar -----
+        this.defaultAvatar = new ImageIcon(getClass().getResource("/ui/defaultAvatar.png"));
+        imageLabel.setIcon(this.defaultAvatar);
+        add(imageLabel);
+
 
 
 
@@ -69,6 +90,7 @@ public class EasyByteApp extends JPanel implements ActionListener {
         usernameText.setBounds(200, 50, 165, 25);
         panel.add(usernameText);
 
+
         // ------ Password ------
         passwordLabel = new JLabel("Password:");
         passwordLabel.setBounds(130, 80, 80, 25);
@@ -77,12 +99,13 @@ public class EasyByteApp extends JPanel implements ActionListener {
         passwordText.setBounds(200, 80, 165, 25);
         panel.add(passwordText);
 
+
         // ------ Login button -----
         login = new JButton("Login");
         login.setBounds(150, 130, 80, 25);
         login.setBackground(buttonColour);
         // Add action to login button
-        login.addActionListener(this);
+        login.addActionListener(this::loginClick);
         panel.add(login);
 
 
@@ -90,30 +113,8 @@ public class EasyByteApp extends JPanel implements ActionListener {
         logout = new JButton("Logout");
         logout.setBounds(250, 130, 80, 25);
         logout.setBackground(buttonColour);
+        logout.addActionListener(this::logoutClick);
         panel.add(logout);
-
-
-        // ---- JTable user data ----
-
-        // TODO ------ remove dummy data once finished
-        String[] columnNames = {"First name", "Last name", "UserID"};
-        Object[][] data = {
-                {"Colton", "Randall", "01"},
-                {"Bob", "Martin", "02"},
-                {"Sarah", "Greenwood", "03"},
-                {"Jess", "McDonald", "04"},
-        };
-
-        // TODO ----- end of dummy data
-
-        userData = new JTable(data, columnNames);
-        userData.setFillsViewportHeight(true);
-
-        // Add a scroll pane
-        JScrollPane scrollPane = new JScrollPane(userData);
-        scrollPane.setBounds(80, 200, 350, 80);
-        panel.add(scrollPane);
-
 
 
         // ------ Delete Account button -----
@@ -121,10 +122,6 @@ public class EasyByteApp extends JPanel implements ActionListener {
         deleteAccount.setBounds(180, 350, 150, 25);
         deleteAccount.setBackground(Color.RED);
         panel.add(deleteAccount);
-
-
-
-
 
 
 
@@ -136,79 +133,129 @@ public class EasyByteApp extends JPanel implements ActionListener {
         panel.add(successLogin);
 
 
-        // TODO Leave at end of constructor
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+    }
+    // End of constructor
 
+
+
+    // Handle login button
+    private void loginClick(ActionEvent a) {
+        new getUserSwingWorker().execute();
     }
 
 
-    // Runs whenever login button is run
-    // TODO Implement this method.
-    /*  Hint #1: event.getSource() will return the button which was pressed.
-        Hint #2: JTextField's getText() method will get the value in the text box, as a String.
-        Hint #3: JTextField's setText() method will allow you to pass it a String, which will be displayed in
-        the text box.
-     */
+    // Handle logout button
+    private void logoutClick(ActionEvent a) {
+        try{
+            API.getInstance().userLogout();
+        } catch (IOException | java.lang.InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
+
+
+    // ---- Get user details and send to JTable to be displayed
+    private static void getUser(User user) {
+
+        // ---- JTable containing user data ----
+        columnNames = new String[]{"Username", "First name", "Last name", "UserID"};
+        data = new String[][]{{user.getUsername()}, {user.getFirstName()}, {user.getLastName()},
+                {user.getUserId()}};
+
+
+        userData = new JTable(data, columnNames);
+        userData.setFillsViewportHeight(true);
+        panel.add(userData);
+
+        // Add a scroll pane
+        JScrollPane scrollPane = new JScrollPane(userData);
+        scrollPane.setBounds(80, 200, 350, 40);
+        panel.add(scrollPane);
+
+
+        String url = "http://localhost:3000/userhome/" + user.getUsername();
+        try {
+            imageLabel.setIcon(new ImageIcon(new URL(url)));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    // Login and logout button action event handlers
     @Override
     public void actionPerformed(ActionEvent arg0) {
 
         String username = usernameText.getText();
         String password = passwordText.getText();
 
-        /*
-         *  Conditional for if username and password
-         *  match - then print success message
-         */
-        if (username.equals("username") && password.equals("pa55word")) {
-            successLogin.setText("Login successful!");
-            successLogin.setForeground(Color.BLUE);
-        } else {
-            JOptionPane.showMessageDialog(login, "Login Failed");
-        }
 
+        // If logging in or out, print appropriate message successful message
+        if (arg0.getSource().equals("login")) {
+            if (username.equals(user.getUsername()) && password.equals(user.getPassword())) {
+                successLogin.setText("Login successful!");
+                successLogin.setForeground(Color.BLUE);
+            } else if (arg0.getSource().equals("logout")) {
+                successLogin.setText("Logout successful!");
+                successLogin.setForeground(Color.ORANGE);
+            }
+            else {
+                JOptionPane.showMessageDialog(login, "Login Failed");
+            }
+
+        }
     }
 
 
 
-    // TODO SWINGWORKER HERE
-    private class getUserSwingWorker extends SwingWorker<User, Void> {
+    // Beginning of SwingWorker class
+    private static class getUserSwingWorker extends SwingWorker<User, Void> {
 
-        private final String user;
+        private String user = null;
 
-        public getUserSwingWorker(String user) {
+        // Constructor
+        public getUserSwingWorker() {
             this.user = user;
             login.setEnabled(false);
             logout.setEnabled(false);
-
         }
 
 
-        // TODO DoInBackGround HERE
+
+        // doInBackground Method
         @Override
         protected User doInBackground() throws Exception {
 
-            return API.getInstance().getUserLogin(new UserLogin("Coltonrandall", "pa55word"));
+            // TODO remove dummy data once finished
+            return API.getInstance().getUserLogin(new UserLogin("coltonrandall", "pa55word"));
+
         }
 
-
-
-        // TODO Done() HERE
+        // Done method
         @Override
         protected void done() {
-
-
+            try {
+                User currentUser = get();
+                getUser(currentUser);
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+            login.setEnabled(true);
+            logout.setEnabled(true);
         }
     }
-}
+
 
 
     // Draw images
-//    public void paint(Graphics g){
-//
-//        g.drawImage(logo.getImage(), 100, 5, null);
-//    }
+    public void paint(Graphics g){
+        g.drawImage(defaultAvatar.getImage(), 100, 5, null);
+    }
+
+}
 
 
 

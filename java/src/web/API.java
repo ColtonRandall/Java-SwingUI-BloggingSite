@@ -41,6 +41,7 @@ public class API {
     }
 
 
+    // Login
     public User getUserLogin(UserLogin userLogin) throws InterruptedException, IOException {
 
         String json = JSONUtils.toJSON(userLogin);
@@ -58,11 +59,68 @@ public class API {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         String responseJson = response.body();
 
-        User user = JSONUtils.toObject(responseJson, User.class);
-
-        return user;
+        return JSONUtils.toObject(responseJson, User.class);
 
     }
+
+    // Logout
+    public void userLogout() throws InterruptedException, IOException {
+
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/logoutuser"))
+                .setHeader("Accept", "application/json")
+                .method("GET", HttpRequest.BodyPublishers.noBody());
+
+        // Request
+        HttpRequest request = builder.build();
+
+        // Response
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        String json = response.body();
+
+        JSONUtils.toObject(json, User.class);
+    }
+
+
+
+    // Users
+    public void retrieveUserInfo() throws InterruptedException, IOException {
+
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/users"))
+                .setHeader("Accept", "application/json")
+                .method("GET", HttpRequest.BodyPublishers.noBody());
+
+        // Request
+        HttpRequest request = builder.build();
+
+        // Response
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        String json = response.body();
+
+        JSONUtils.toObject(json, User.class);
+    }
+
+
+
+    // Delete account
+    public void deleteUser() throws InterruptedException, IOException {
+
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/users:id"))
+                .setHeader("Accept", "application/json")
+                .method("DELETE", HttpRequest.BodyPublishers.noBody());
+
+        // Request
+        HttpRequest request = builder.build();
+
+        // Response
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        String json = response.body();
+
+        JSONUtils.toObject(json, User.class);
+    }
+
 
 
 
