@@ -4,12 +4,16 @@ import pojos.User;
 import pojos.UserLogin;
 import web.API;
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
 
 
@@ -21,7 +25,6 @@ public class EasyByteApp extends JPanel implements ActionListener {
     private static JPanel panel = new JPanel();
 
     // Swing components
-    private static JLabel successLogin;
     private static JLabel passwordLabel;
     private static JLabel usernameLabel;
     private static JButton login;
@@ -34,6 +37,7 @@ public class EasyByteApp extends JPanel implements ActionListener {
     private static JTable userData;
     private static String[] columnNames;
     private static String[][] data;
+    private static DefaultTableModel model;
 
 
     // Images
@@ -45,6 +49,9 @@ public class EasyByteApp extends JPanel implements ActionListener {
     private static final Color backgroundColour = new Color(87, 163, 163);
     private static final Color buttonColour = new Color(236, 198, 164);
 
+    // Border
+    Border border = new LineBorder(Color.black, 2, false);
+
     // User object
     private User user;
 
@@ -54,7 +61,7 @@ public class EasyByteApp extends JPanel implements ActionListener {
 
         // JFrame
         JFrame frame = new JFrame();
-        frame.setSize(500, 500);
+        frame.setSize(800, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Easy Byte Recipe Login");
         frame.add(panel);
@@ -62,6 +69,7 @@ public class EasyByteApp extends JPanel implements ActionListener {
         // Background / layout features
         panel.setLayout(null);
         panel.setBackground(backgroundColour);
+        panel.setBorder(border);
 
 
         // -------- Logo ----------
@@ -72,190 +80,199 @@ public class EasyByteApp extends JPanel implements ActionListener {
         add(imageLabel);
 
 
-
         // ----- Default avatar -----
         this.defaultAvatar = new ImageIcon(getClass().getResource("/ui/defaultAvatar.png"));
         imageLabel.setIcon(this.defaultAvatar);
         add(imageLabel);
 
 
-
-
         // ----- Username -----
         usernameLabel = new JLabel("Username:");
         // x, y, width, height
-        usernameLabel.setBounds(130, 50, 80, 25);
+        usernameLabel.setBounds(280, 50, 80, 25);
         panel.add(usernameLabel);
         usernameText = new JTextField(20);
-        usernameText.setBounds(200, 50, 165, 25);
+        usernameText.setBounds(370, 50, 165, 25);
+        usernameText.setBorder(border);
         panel.add(usernameText);
 
 
         // ------ Password ------
         passwordLabel = new JLabel("Password:");
-        passwordLabel.setBounds(130, 80, 80, 25);
+        passwordLabel.setBounds(280, 90, 80, 25);
         panel.add(passwordLabel);
         passwordText = new JPasswordField(20);
-        passwordText.setBounds(200, 80, 165, 25);
+        passwordText.setBounds(370, 90, 165, 25);
+        passwordText.setBorder(border);
         panel.add(passwordText);
 
 
         // ------ Login button -----
         login = new JButton("Login");
-        login.setBounds(150, 130, 80, 25);
+        login.setBounds(290, 145, 80, 25);
         login.setBackground(buttonColour);
-        // Add action to login button
-        login.addActionListener(this::loginClick);
+        login.addActionListener(this);
+        login.setBorder(border);
         panel.add(login);
-
 
         // ------ Logout button -----
         logout = new JButton("Logout");
-        logout.setBounds(250, 130, 80, 25);
+        logout.setBounds(440, 145, 80, 25);
         logout.setBackground(buttonColour);
-        logout.addActionListener(this::logoutClick);
+        logout.addActionListener(this);
+        logout.setBorder(border);
         panel.add(logout);
+
+        // ----- JTable ----
+        columnNames = new String[]{"Username", "First name", "Last name", "UserID", "Avatar", "Birthday",
+                "Description", "AuthToken"};
+//        data = new String[][]{{User.getUsername()}, {User.getFirstName()}, {User.getLastName()},
+//                {User.getUserId()}};
+
+        data = new String[][]{};
+
+
+        userData = new JTable(new DefaultTableModel(columnNames, 0));
+        userData.setFillsViewportHeight(true);
+        panel.add(userData);
+
+
+        // TableModel
+        model = (DefaultTableModel) userData.getModel();
+
+
+        // Add a scroll pane
+        JScrollPane scrollPane = new JScrollPane(userData);
+        scrollPane.setBounds(80, 200, 650, 200);
+        scrollPane.setBorder(border);
+        panel.add(scrollPane);
 
 
         // ------ Delete Account button -----
         deleteAccount = new JButton("Delete Account");
-        deleteAccount.setBounds(180, 350, 150, 25);
+        deleteAccount.setBounds(330, 450, 150, 25);
         deleteAccount.setBackground(Color.RED);
+        deleteAccount.addActionListener(this);
+        deleteAccount.setBorder(border);
         panel.add(deleteAccount);
-
-
-
-		/* Add success message to login button - Only show if user enters a correct
-		 * username and password
-		 */
-        successLogin = new JLabel("");
-        successLogin.setBounds(210, 160, 300, 25);
-        panel.add(successLogin);
 
 
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
-    // End of constructor
+    // ------- End of constructor ------
 
 
-
-    // Handle login button
-    private void loginClick(ActionEvent a) {
-        new getUserSwingWorker().execute();
-    }
-
-
-    // Handle logout button
-    private void logoutClick(ActionEvent a) {
-        try{
-            API.getInstance().userLogout();
-        } catch (IOException | java.lang.InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-
-    // ---- Get user details and send to JTable to be displayed
-    private static void getUser(User user) {
-
-        // ---- JTable containing user data ----
-        columnNames = new String[]{"Username", "First name", "Last name", "UserID"};
-        data = new String[][]{{user.getUsername()}, {user.getFirstName()}, {user.getLastName()},
-                {user.getUserId()}};
-
-
-        userData = new JTable(data, columnNames);
-        userData.setFillsViewportHeight(true);
-        panel.add(userData);
-
-        // Add a scroll pane
-        JScrollPane scrollPane = new JScrollPane(userData);
-        scrollPane.setBounds(80, 200, 350, 40);
-        panel.add(scrollPane);
-
-
-        String url = "http://localhost:3000/userhome/" + user.getUsername();
-        try {
-            imageLabel.setIcon(new ImageIcon(new URL(url)));
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    // Login and logout button action event handlers
+    // Handle login and logout buttons
     @Override
-    public void actionPerformed(ActionEvent arg0) {
+    public void actionPerformed(ActionEvent a) {
+        if (a.getSource() == login) {
+            System.out.println("Login clicked");
 
-        String username = usernameText.getText();
-        String password = passwordText.getText();
+            // Create a new getUserSwingWorker if the login button is clicked
+            new getUserSwingWorker(usernameText.getText(), String.valueOf(passwordText.getPassword())).execute();
 
 
-        // If logging in or out, print appropriate message successful message
-        if (arg0.getSource().equals("login")) {
-            if (username.equals(user.getUsername()) && password.equals(user.getPassword())) {
-                successLogin.setText("Login successful!");
-                successLogin.setForeground(Color.BLUE);
-            } else if (arg0.getSource().equals("logout")) {
-                successLogin.setText("Logout successful!");
-                successLogin.setForeground(Color.ORANGE);
+        } else if (a.getSource() == logout) {
+            System.out.println("Logout clicked");
+            try {
+                API.getInstance().userLogout();
+                JOptionPane.showMessageDialog(null, "User successfully logged out");
+            } catch (IOException | java.lang.InterruptedException e) {
+                e.printStackTrace();
             }
-            else {
-                JOptionPane.showMessageDialog(login, "Login Failed");
+        } else if (a.getSource() == deleteAccount) {
+            if (JOptionPane.showConfirmDialog(null, "Are you sure you want to delete your account?") == JOptionPane.YES_OPTION) {
+                JOptionPane.showMessageDialog(null, "User deleted");
+                // TODO remove row
             }
-
         }
     }
 
 
 
     // Beginning of SwingWorker class
-    private static class getUserSwingWorker extends SwingWorker<User, Void> {
+    static class getUserSwingWorker extends SwingWorker<Boolean, Void> {
 
-        private String user = null;
+        private String username;
+        private String password;
 
         // Constructor
-        public getUserSwingWorker() {
-            this.user = user;
-            login.setEnabled(false);
-            logout.setEnabled(false);
+        public getUserSwingWorker(String username, String password) {
+            this.username = username;
+            this.password = password;
         }
-
-
 
         // doInBackground Method
         @Override
-        protected User doInBackground() throws Exception {
+        protected Boolean doInBackground() throws Exception {
 
-            // TODO remove dummy data once finished
-            return API.getInstance().getUserLogin(new UserLogin("coltonrandall", "pa55word"));
+            System.out.println(username + password);
 
+            // Disable login button while SwingWorker thread is running
+            login.setEnabled(false);
+
+            return API.getInstance().getUserLogin(new UserLogin(username, password));
         }
 
         // Done method
         @Override
         protected void done() {
             try {
-                User currentUser = get();
-                getUser(currentUser);
+                // get info from doInBackground() if successful (204)
+                Boolean isAdmin = get();
+                if (isAdmin) {
+                    JOptionPane.showMessageDialog(null, "Login Successful!");
+
+                    // If user is admin, retrieve the list of all users in database by calling the next SwingWorker
+                    new retrieveUserListSwingWorker().execute();
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "Login Failed, please try again!");
+                    login.setEnabled(true);
+                }
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
             login.setEnabled(true);
-            logout.setEnabled(true);
         }
     }
 
 
+    //    -- Obtain list of users in JTable --
+    static class retrieveUserListSwingWorker extends SwingWorker<ArrayList<User>, Void> {
 
-    // Draw images
-    public void paint(Graphics g){
-        g.drawImage(defaultAvatar.getImage(), 100, 5, null);
+
+        @Override
+        protected ArrayList <User> doInBackground() throws Exception {
+
+            return API.getInstance().retrieveUserList();
+
+        }
+
+
+        @Override
+        protected void done() {
+
+            try {
+                ArrayList <User> userList = get();
+
+                // loop through array of users and populate JTable
+                    for (User result : userList){
+                        model.addRow(result.toJTableRow());
+                    }
+
+            } catch (InterruptedException | ExecutionException interruptedException) {
+                interruptedException.printStackTrace();
+
+            }
+        }
     }
-
 }
+
+
+
+
 
 
 

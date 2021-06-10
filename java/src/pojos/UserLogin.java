@@ -2,28 +2,28 @@ package pojos;
 
 public class UserLogin {
 
-    private String username;
-    private String password;
+    private String usernameLogin;
+    private String passwordLogin;
 
     public UserLogin(String username, String password) {
-        this.username = username;
-        this.password = password;
+        this.usernameLogin = username;
+        this.passwordLogin = password;
     }
 
     public String getUsername() {
-        return username;
+        return usernameLogin;
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        this.usernameLogin = username;
     }
 
     public String getPassword() {
-        return password;
+        return passwordLogin;
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.passwordLogin = password;
     }
 
 

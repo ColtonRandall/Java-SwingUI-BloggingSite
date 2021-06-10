@@ -4,31 +4,35 @@ import pojos.User;
 import pojos.UserLogin;
 import util.JSONUtils;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
-import java.net.CookieManager;
-import java.net.URI;
+import java.net.*;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.ArrayList;
+
 
 public class API {
-    private static API instance;
 
+    private static API instance;
+    private final CookieManager cookieManager;
+    private final HttpClient client;
     private static final String BASE_URL = "http://localhost:3000";
 
 
-    // TODO SINGLETON PATTERN
+    // Single object shared throughout he program (Singleton Pattern)
     public static API getInstance() {
-        if (instance == null) {
-            instance = new API();
+        if (API.instance == null) {
+            API.instance = new API();
         }
-        return instance;
+        return API.instance;
     }
 
-    private final CookieManager cookieManager;
-    private final HttpClient client;
 
+    // Constructor
     private API() {
         this.cookieManager = new CookieManager();
 
@@ -41,33 +45,46 @@ public class API {
     }
 
 
-    // Login
-    public User getUserLogin(UserLogin userLogin) throws InterruptedException, IOException {
+    // Login http method
+    public boolean getUserLogin(UserLogin userLogin) throws InterruptedException, IOException {
 
-        String json = JSONUtils.toJSON(userLogin);
+        String loginJSON = JSONUtils.toJSON(userLogin);
+
+        System.out.println(loginJSON);
 
         HttpRequest.Builder builder = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/login"))
+                .uri(URI.create(BASE_URL + "/api/login"))
                 .setHeader("Content-Type", "application/json")
                 .setHeader("Accept", "application/json")
-                .method("POST", HttpRequest.BodyPublishers.ofString(json));
+                .method("POST", HttpRequest.BodyPublishers.ofString(loginJSON));
 
         // Request
         HttpRequest request = builder.build();
 
         // Response
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        java.util.List<HttpCookie> cookies = this.cookieManager.getCookieStore().get(URI.create(BASE_URL));
         String responseJson = response.body();
 
-        return JSONUtils.toObject(responseJson, User.class);
+        System.out.println(response.statusCode());
+
+        if (response.statusCode() == 204){
+            System.out.println("Authentication successful...");
+            System.out.println(cookies);
+            return true;
+        } else{
+            System.out.println("Authentication failed, please try again!");
+            return false;
+        }
 
     }
 
-    // Logout
+    // Logout http Method
     public void userLogout() throws InterruptedException, IOException {
 
         HttpRequest.Builder builder = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/logoutuser"))
+                .uri(URI.create(BASE_URL + "/api/logout"))
+                .setHeader("Content-Type", "application/json")
                 .setHeader("Accept", "application/json")
                 .method("GET", HttpRequest.BodyPublishers.noBody());
 
@@ -76,18 +93,22 @@ public class API {
 
         // Response
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        String json = response.body();
+        java.util.List<HttpCookie> cookies = this.cookieManager.getCookieStore().get(URI.create(BASE_URL));
+        System.out.println(cookies);
 
-        JSONUtils.toObject(json, User.class);
+
+
+//        JSONUtils.toJSON(json, User.class);
     }
 
 
 
-    // Users
-    public void retrieveUserInfo() throws InterruptedException, IOException {
+    // User list http Method
+    public ArrayList <User> retrieveUserList() throws InterruptedException, IOException {
 
         HttpRequest.Builder builder = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/users"))
+                .uri(URI.create(BASE_URL + "/api/users"))
+                .setHeader("Content-Type", "application/json")
                 .setHeader("Accept", "application/json")
                 .method("GET", HttpRequest.BodyPublishers.noBody());
 
@@ -98,16 +119,18 @@ public class API {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         String json = response.body();
 
-        JSONUtils.toObject(json, User.class);
+        // TODO return list of users
+        return (ArrayList <User>) JSONUtils.toList(json, User.class);
     }
 
 
 
-    // Delete account
+    // Delete account http Method
     public void deleteUser() throws InterruptedException, IOException {
 
         HttpRequest.Builder builder = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/users:id"))
+                .uri(URI.create(BASE_URL + "/api/users/:id"))
+                .setHeader("Content-Type", "application/json")
                 .setHeader("Accept", "application/json")
                 .method("DELETE", HttpRequest.BodyPublishers.noBody());
 
@@ -123,14 +146,4 @@ public class API {
 
 
 
-
-//    public int getCallCount() {
-//        List<HttpCookie> cookies = this.cookieManager.getCookieStore().get(URI.create(BASE_URL));
-//        for (HttpCookie cookie : cookies) {
-//            if (cookie.getName().equals("callCount")) {
-//                return Integer.parseInt(cookie.getValue());
-//            }
-//        }
-//        return 0;
-//    }
 }
