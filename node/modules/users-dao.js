@@ -42,6 +42,7 @@ async function retrieveUserById(userId) {
     return user;
 }
 
+
 /**
  * Gets the user with the given username and password from the database.
  * If there is no such user, undefined will be returned.

@@ -75,11 +75,11 @@ CREATE TABLE vote (
 	FOREIGN KEY (commentId) REFERENCES comments (commentId)
 );
 
-insert into users (username, password, bpassword, avatar, fname, lname, birthday, description) VALUES
-('username1', 'abc123', 'abc123', '', 'Abram', 'Goh', '2000-01-01', 'This is Abram!'),
-('username2', 'efg456', 'efg456', '', 'Colton', 'Randall', '2000-02-02', 'I am Colton!'),
-('username3', 'hij789', 'hij789', '', 'Olga', 'Hoxha', '2000-03-03', 'This is Olga!'),
-('banananeko', 'klm100', 'klm100', '', 'Yiwei', 'Li', '2000-04-04', 'I am Yiwei!');
+-- insert into users (username, password, bpassword, avatar, fname, lname, birthday, description) VALUES
+-- ('username1', 'abc123', 'abc123', '', 'Abram', 'Goh', '2000-01-01', 'This is Abram!'),
+-- ('username2', 'efg456', 'efg456', '', 'Colton', 'Randall', '2000-02-02', 'I am Colton!'),
+-- ('username3', 'hij789', 'hij789', '', 'Olga', 'Hoxha', '2000-03-03', 'This is Olga!'),
+-- ('banananeko', 'klm100', 'klm100', '', 'Yiwei', 'Li', '2000-04-04', 'I am Yiwei!');
 
 insert into categories (name, description) VALUES
 ('Starters', 'Starters consist of a wide variety of hot or cold dishes served before the main course of a meal. As part of a formal dinner, they may be preceded by soup and hors d''oeuvres.'),

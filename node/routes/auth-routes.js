@@ -30,6 +30,8 @@ router.post("/login", async function (req, res) {
     const username = req.body.username;
     const password = req.body.password;
 
+    console.log("ALERT!");
+
     // Find a matching user in the database
     const user = await usersDao.retrieveUserWithCredentials(username, password);
     // if there is a matching user...
@@ -138,6 +140,8 @@ router.get("/getUser", function (req, res) {
     const user = res.locals.user;
     res.status(200).json({ user });
 });
+
+
 
 
 // Delete user
