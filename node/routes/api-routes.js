@@ -10,16 +10,11 @@ const { route } = require("./application-routes.js");
 router.use(bodyParser.json());
 
 
-// TODO API routes page and endpoints 
-
 
 // Post login page
 router.post("/api/login", async function (req, res) {
     const username = req.body.username;
     const password = req.body.password;
-
-    console.log(username);
-    console.log(password);
 
     const user = await usersDao.retrieveUserWithCredentials(username, password);
 
@@ -29,8 +24,6 @@ router.post("/api/login", async function (req, res) {
         user.authToken = authToken;
         await usersDao.updateUser(user);
         res.cookie("authToken", authToken);
-
-        console.log(user);
 
         res.status(204).json();
     }
@@ -66,6 +59,8 @@ router.get("/api/users", async function(req, res){
 // DELETE user
 router.delete("/api/users/:id", async function(req, res){
     // If valid user / admin
+    const user = res.locals.user;
+
     if (user) {
         try {
             await usersDao.deleteUser(res.locals.user.userId);
@@ -76,9 +71,9 @@ router.delete("/api/users/:id", async function(req, res){
         catch (err) {
             res.status(401).json();
         }
-    }
+    
     // User does not exist
-    else {
+    }else {
         // Auth fail
         res.locals.user = null;
         res.status(401).json();

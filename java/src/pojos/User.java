@@ -29,13 +29,15 @@ public class User {
                 '}';
     }
 
+    // Array of objects passing into JTable
     public Object[] toJTableRow(){
-        
-        return new Object[] {this.userId, this.username, this.password, this.bpassword, this.avatar, this.fname,
-                this.lname, this.birthday, this.description, this.authToken};
+
+        return new Object[] {this.fname, this.lname, this.username, this.avatar, this.userId, this.birthday,
+                this.description, this.authToken, this.bpassword, this.authToken};
 
     }
 
+    // Getters and Setters
     public String getUserId() {
         return userId;
     }

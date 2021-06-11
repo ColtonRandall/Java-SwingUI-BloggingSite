@@ -4,8 +4,6 @@ import pojos.User;
 import pojos.UserLogin;
 import util.JSONUtils;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.IOException;
 import java.net.*;
 import java.net.http.HttpClient;
@@ -17,6 +15,7 @@ import java.util.ArrayList;
 
 public class API {
 
+    // Variables
     private static API instance;
     private final CookieManager cookieManager;
     private final HttpClient client;
@@ -50,7 +49,6 @@ public class API {
 
         String loginJSON = JSONUtils.toJSON(userLogin);
 
-        System.out.println(loginJSON);
 
         HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/api/login"))
@@ -64,15 +62,14 @@ public class API {
         // Response
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         java.util.List<HttpCookie> cookies = this.cookieManager.getCookieStore().get(URI.create(BASE_URL));
-        String responseJson = response.body();
 
-        System.out.println(response.statusCode());
 
-        if (response.statusCode() == 204){
+        // Authentication confirmation
+        if (response.statusCode() == 204) {
             System.out.println("Authentication successful...");
             System.out.println(cookies);
             return true;
-        } else{
+        } else {
             System.out.println("Authentication failed, please try again!");
             return false;
         }
@@ -92,19 +89,16 @@ public class API {
         HttpRequest request = builder.build();
 
         // Response
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         java.util.List<HttpCookie> cookies = this.cookieManager.getCookieStore().get(URI.create(BASE_URL));
+
+        // Check if auth token has been cleared
         System.out.println(cookies);
 
-
-
-//        JSONUtils.toJSON(json, User.class);
     }
 
 
-
     // User list http Method
-    public ArrayList <User> retrieveUserList() throws InterruptedException, IOException {
+    public ArrayList<User> retrieveUserList() throws InterruptedException, IOException {
 
         HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/api/users"))
@@ -119,14 +113,12 @@ public class API {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         String json = response.body();
 
-        // TODO return list of users
-        return (ArrayList <User>) JSONUtils.toList(json, User.class);
+        return (ArrayList<User>) JSONUtils.toList(json, User.class);
     }
 
 
-
     // Delete account http Method
-    public void deleteUser() throws InterruptedException, IOException {
+    public Boolean deleteUser(int selectedRowUserId) throws InterruptedException, IOException {
 
         HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/api/users/:id"))
@@ -139,11 +131,12 @@ public class API {
 
         // Response
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
         String json = response.body();
 
         JSONUtils.toObject(json, User.class);
+        return null;
     }
-
 
 
 }

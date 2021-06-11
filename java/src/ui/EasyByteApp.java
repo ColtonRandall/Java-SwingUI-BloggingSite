@@ -3,6 +3,7 @@ package ui;
 import pojos.User;
 import pojos.UserLogin;
 import web.API;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
@@ -10,14 +11,14 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
 
 
-public class EasyByteApp extends JPanel implements ActionListener {
+public class EasyByteApp extends JPanel implements ActionListener, MouseListener {
 
     // ----- Variables ----
 
@@ -29,14 +30,17 @@ public class EasyByteApp extends JPanel implements ActionListener {
     private static JLabel usernameLabel;
     private static JButton login;
     private static JButton logout;
-    private static JButton deleteAccount;
+    private static JButton deleteUser;
     private static JPasswordField passwordText;
     private static JTextField usernameText;
+
+    // Num users count
+    private static JLabel numUsersLabel;
+    private static int userCount;
 
     // Table components
     private static JTable userData;
     private static String[] columnNames;
-    private static String[][] data;
     private static DefaultTableModel model;
 
 
@@ -48,12 +52,15 @@ public class EasyByteApp extends JPanel implements ActionListener {
     // Colours
     private static final Color backgroundColour = new Color(87, 163, 163);
     private static final Color buttonColour = new Color(236, 198, 164);
+    private static final Color tableColour = new Color(173, 216, 230);
+    private static final Color deleteButton = new Color(255, 105, 97);
+
 
     // Border
     Border border = new LineBorder(Color.black, 2, false);
 
-    // User object
-    private User user;
+    // User delete
+    private static int selectedRowUserId;
 
 
     // ----- Constructor ----
@@ -64,6 +71,7 @@ public class EasyByteApp extends JPanel implements ActionListener {
         frame.setSize(800, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Easy Byte Recipe Login");
+        frame.setResizable(false);
         frame.add(panel);
 
         // Background / layout features
@@ -72,34 +80,21 @@ public class EasyByteApp extends JPanel implements ActionListener {
         panel.setBorder(border);
 
 
-        // -------- Logo ----------
-        this.logo = new ImageIcon(getClass().getResource("/ui/logo.png"));
-
-        imageLabel = new JLabel(logo);
-        imageLabel.setIcon(this.logo);
-        add(imageLabel);
-
-
-        // ----- Default avatar -----
-        this.defaultAvatar = new ImageIcon(getClass().getResource("/ui/defaultAvatar.png"));
-        imageLabel.setIcon(this.defaultAvatar);
-        add(imageLabel);
-
-
         // ----- Username -----
         usernameLabel = new JLabel("Username:");
-        // x, y, width, height
-        usernameLabel.setBounds(280, 50, 80, 25);
+        usernameLabel.setBounds(260, 58, 150, 25);
+        usernameLabel.setFont(new Font("Calibri", Font.BOLD, 18));
         panel.add(usernameLabel);
         usernameText = new JTextField(20);
-        usernameText.setBounds(370, 50, 165, 25);
+        usernameText.setBounds(370, 55, 165, 25);
         usernameText.setBorder(border);
         panel.add(usernameText);
 
 
         // ------ Password ------
         passwordLabel = new JLabel("Password:");
-        passwordLabel.setBounds(280, 90, 80, 25);
+        passwordLabel.setBounds(265, 93, 150, 25);
+        passwordLabel.setFont(new Font("Calibri", Font.BOLD, 18));
         panel.add(passwordLabel);
         passwordText = new JPasswordField(20);
         passwordText.setBounds(370, 90, 165, 25);
@@ -109,7 +104,7 @@ public class EasyByteApp extends JPanel implements ActionListener {
 
         // ------ Login button -----
         login = new JButton("Login");
-        login.setBounds(290, 145, 80, 25);
+        login.setBounds(295, 145, 90, 30);
         login.setBackground(buttonColour);
         login.addActionListener(this);
         login.setBorder(border);
@@ -117,44 +112,45 @@ public class EasyByteApp extends JPanel implements ActionListener {
 
         // ------ Logout button -----
         logout = new JButton("Logout");
-        logout.setBounds(440, 145, 80, 25);
+        logout.setBounds(440, 145, 90, 30);
         logout.setBackground(buttonColour);
         logout.addActionListener(this);
         logout.setBorder(border);
         panel.add(logout);
+        logout.setEnabled(false);
+
+        // ------ Delete User button -----
+        deleteUser = new JButton("Delete Account");
+        deleteUser.setBounds(320, 500, 150, 35);
+        deleteUser.setBackground(deleteButton);
+        deleteUser.addActionListener(this);
+        deleteUser.setBorder(border);
+        panel.add(deleteUser);
+        deleteUser.setEnabled(false);
+
 
         // ----- JTable ----
-        columnNames = new String[]{"Username", "First name", "Last name", "UserID", "Avatar", "Birthday",
-                "Description", "AuthToken"};
-//        data = new String[][]{{User.getUsername()}, {User.getFirstName()}, {User.getLastName()},
-//                {User.getUserId()}};
-
-        data = new String[][]{};
-
-
+        columnNames = new String[]{"First name", "Last name", "Username", "Avatar", "UserID", "Birthday",
+                "Description", "AuthToken", "Password"};
         userData = new JTable(new DefaultTableModel(columnNames, 0));
         userData.setFillsViewportHeight(true);
+        userData.setBackground(tableColour);
         panel.add(userData);
-
 
         // TableModel
         model = (DefaultTableModel) userData.getModel();
 
-
         // Add a scroll pane
         JScrollPane scrollPane = new JScrollPane(userData);
-        scrollPane.setBounds(80, 200, 650, 200);
+        scrollPane.setBounds(5, 200, 780, 200);
         scrollPane.setBorder(border);
         panel.add(scrollPane);
 
-
-        // ------ Delete Account button -----
-        deleteAccount = new JButton("Delete Account");
-        deleteAccount.setBounds(330, 450, 150, 25);
-        deleteAccount.setBackground(Color.RED);
-        deleteAccount.addActionListener(this);
-        deleteAccount.setBorder(border);
-        panel.add(deleteAccount);
+        // Num users label
+        numUsersLabel = new JLabel("Total registered accounts: ");
+        numUsersLabel.setBounds(20, 400, 200, 35);
+        panel.add(numUsersLabel);
+        numUsersLabel.setVisible(false);
 
 
         frame.setLocationRelativeTo(null);
@@ -163,35 +159,64 @@ public class EasyByteApp extends JPanel implements ActionListener {
     // ------- End of constructor ------
 
 
-    // Handle login and logout buttons
+
+    // Handle login, logout and deleteUser buttons
     @Override
     public void actionPerformed(ActionEvent a) {
+        // Login button click
         if (a.getSource() == login) {
-            System.out.println("Login clicked");
-
             // Create a new getUserSwingWorker if the login button is clicked
             new getUserSwingWorker(usernameText.getText(), String.valueOf(passwordText.getPassword())).execute();
 
-
+        // Logout button click
         } else if (a.getSource() == logout) {
-            System.out.println("Logout clicked");
             try {
-                API.getInstance().userLogout();
-                JOptionPane.showMessageDialog(null, "User successfully logged out");
+                // Ask the user to confirm logout
+                int logoutResult = JOptionPane.showConfirmDialog(null, "Are you sure you want to Logout?");
+
+                if (logoutResult == JOptionPane.YES_OPTION) {
+                    API.getInstance().userLogout();
+                    JOptionPane.showMessageDialog(null, "User successfully logged out");
+
+                    // Reset the GUI, remove the number of registered users and reset the login button
+                    model.setRowCount(0);
+                    usernameText.setText("");
+                    passwordText.setText("");
+                    login.setEnabled(true);
+                    numUsersLabel.setVisible(false);
+                }
             } catch (IOException | java.lang.InterruptedException e) {
                 e.printStackTrace();
             }
-        } else if (a.getSource() == deleteAccount) {
-            if (JOptionPane.showConfirmDialog(null, "Are you sure you want to delete your account?") == JOptionPane.YES_OPTION) {
-                JOptionPane.showMessageDialog(null, "User deleted");
-                // TODO remove row
+
+        // Delete button click
+        } else if (a.getSource() == deleteUser) {
+            int deleteResult = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this account?");
+
+            if (deleteResult == JOptionPane.YES_OPTION) {
+                //Delete Selected Row
+                int getSelectedRowForDeletion = userData.getSelectedRow();
+                //Check if their is a row selected
+                if (getSelectedRowForDeletion != -1) {
+                    model.removeRow(getSelectedRowForDeletion);
+                    JOptionPane.showMessageDialog(null, "User successfully deleted");
+                    new deleteUserSwingWorker().execute();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Unable To Delete");
+                }
             }
         }
     }
 
 
 
-    // Beginning of SwingWorker class
+    // Set number of registered accounts in JTable
+    private static void setNumUsers(int userCount) {
+        numUsersLabel.setText("Total registered users: " + userCount);
+    }
+
+
+    // SwingWorker 1: retrieve the user when logging in
     static class getUserSwingWorker extends SwingWorker<Boolean, Void> {
 
         private String username;
@@ -203,11 +228,8 @@ public class EasyByteApp extends JPanel implements ActionListener {
             this.password = password;
         }
 
-        // doInBackground Method
         @Override
         protected Boolean doInBackground() throws Exception {
-
-            System.out.println(username + password);
 
             // Disable login button while SwingWorker thread is running
             login.setEnabled(false);
@@ -215,7 +237,6 @@ public class EasyByteApp extends JPanel implements ActionListener {
             return API.getInstance().getUserLogin(new UserLogin(username, password));
         }
 
-        // Done method
         @Override
         protected void done() {
             try {
@@ -226,6 +247,10 @@ public class EasyByteApp extends JPanel implements ActionListener {
 
                     // If user is admin, retrieve the list of all users in database by calling the next SwingWorker
                     new retrieveUserListSwingWorker().execute();
+
+                    // enable delete account button once logged in
+                    deleteUser.setEnabled(true);
+                    logout.setEnabled(true);
 
                 } else {
                     JOptionPane.showMessageDialog(null, "Login Failed, please try again!");
@@ -239,28 +264,32 @@ public class EasyByteApp extends JPanel implements ActionListener {
     }
 
 
-    //    -- Obtain list of users in JTable --
+    //  SwingWorker 2: Obtain list of users in JTable
     static class retrieveUserListSwingWorker extends SwingWorker<ArrayList<User>, Void> {
 
-
         @Override
-        protected ArrayList <User> doInBackground() throws Exception {
+        protected ArrayList<User> doInBackground() throws Exception {
 
             return API.getInstance().retrieveUserList();
-
         }
-
 
         @Override
         protected void done() {
 
             try {
-                ArrayList <User> userList = get();
-
+                ArrayList<User> userList = get();
                 // loop through array of users and populate JTable
-                    for (User result : userList){
-                        model.addRow(result.toJTableRow());
-                    }
+                for (User result : userList) {
+                    model.addRow(result.toJTableRow());
+                }
+
+                // When logged in:
+                // Display number of registered users
+                userCount = userData.getRowCount();
+                setNumUsers(userCount);
+                numUsersLabel.setVisible(true);
+                // Disable login button
+                login.setEnabled(false);
 
             } catch (InterruptedException | ExecutionException interruptedException) {
                 interruptedException.printStackTrace();
@@ -268,6 +297,62 @@ public class EasyByteApp extends JPanel implements ActionListener {
             }
         }
     }
+
+
+    // SwingWorker 3: Delete a user account
+    static class deleteUserSwingWorker extends SwingWorker<Boolean, Void> {
+
+
+        @Override
+        protected Boolean doInBackground() throws Exception {
+
+            return API.getInstance().deleteUser(selectedRowUserId);
+        }
+
+
+        @Override
+        protected void done() {
+            try {
+                // update registered user count
+                userCount = model.getRowCount();
+                setNumUsers(userCount);
+                numUsersLabel.setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+        }
+    }
+
+
+    // User a mouse event to get the user's id
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        selectedRowUserId = (int) e.getSource();
+    }
+
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
+
 }
 
 
